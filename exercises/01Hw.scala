@@ -36,36 +36,43 @@ via the GitHub repo for your team and for this exercise.
 
 object Hw01 {
 
-/**
-Consider the following language of propositional logic formulae:
-*/
-sealed abstract class Exp
-case class True() extends Exp  // constant true
-case class False() extends Exp // constant false
-case class And(lhs: Exp, rhs: Exp) extends Exp
-case class Or(lhs: Exp, rhs: Exp) extends Exp
-case class Not(e: Exp) extends Exp
+ /**
+ Consider the following language of propositional logic formulae:
+  */
+ sealed abstract class Exp
+ case class True() extends Exp  // constant true
+ case class False() extends Exp // constant false
+ case class And(lhs: Exp, rhs: Exp) extends Exp
+ case class Or(lhs: Exp, rhs: Exp) extends Exp
+ case class Not(e: Exp) extends Exp
+ case class Impl(lhs: Exp, rhs: Exp) extends Exp
 
-/**
-Tasks:
-
+ /**
+ Tasks:
        1) Implement the missing parts of the interpreter for these formulae
           (the eval function).
           Test the correctness by evaluating the example proposition given
           below and add at least two more examples and test against these.
-
        2) Add implication as a new kind of expression "Impl" and extend
           the interpreter accordingly. Add at least two examples and test.
-*/
+  */
 
-def eval(e: Exp) : Boolean = e match {
-  case True()    => sys.error("not yet implemented")
-  case False()   => sys.error("not yet implemented")
-  case And(l, r) => sys.error("not yet implemented")
-  case Or(l, r)  => sys.error("not yet implemented")
-  case Not(e)    => sys.error("not yet implemented")
+ def eval(e: Exp) : Boolean = e match {
+  case True()    => true
+  case False()   => false
+  case And(l, r) => eval(l) && eval (r)
+  case Or(l, r)  => eval(l) || eval (r)
+  case Not(e)    => !eval(e)
+  case Impl(l, r) => (eval(l) && eval(r)) || (!eval(l) && !eval(r)) || (!eval(l) && eval(r))
+ }
+
+ val exampleProposition1 = And(Not(True()), False()) // should evaluate to false
+ val exampleProposition2 = Or(True(), False()) // should evaluate to true
+ val exampleProposition3 = Not(Or(And(True(), True()), False())) // should evaluate to false
+ val exampleProposition4 = Impl(exampleProposition3, False())
+ val exampleProposition5 = Impl(False(), True())
+ val exampleProposition6 = Or(Impl(exampleProposition2, exampleProposition1), Impl(True(), True()))
+ val exampleProposition7 = Impl(True(), True())
+  
 }
 
-val exampleProposition = And(Not(True()), False()) // should evaluate to false
-
-}
